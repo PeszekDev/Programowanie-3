@@ -1,0 +1,33 @@
+﻿<Window x:Class="Lista_1.zad2"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Lista_1"
+        mc:Ignorable="d"
+        Title="Zadanie 2 - Formularz Studenta" Height="450" Width="450">
+
+    <StackPanel Width="320" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <TextBlock Text="Formularz dodawania studenta" FontSize="18" FontWeight="Bold"
+                   HorizontalAlignment="Center" Margin="0,0,0,20"/>
+
+        <TextBlock Text="Imię:" Margin="0,0,0,5"/>
+        <TextBox Height="25" Margin="0,0,0,15"/>
+
+        <TextBlock Text="Nazwisko:" Margin="0,0,0,5"/>
+        <TextBox Height="25" Margin="0,0,0,15"/>
+
+        <TextBlock Text="Data urodzenia:" Margin="0,0,0,5"/>
+        <DatePicker Height="25" Margin="0,0,0,15"/>
+
+        <TextBlock Text="Semestr:" Margin="0,0,0,5"/>
+        <ComboBox Height="25" Margin="0,0,0,25">
+            <ComboBoxItem Content="Semestr 1" IsSelected="True"/>
+            <ComboBoxItem Content="Semestr 2"/>
+            <ComboBoxItem Content="Semestr 3"/>
+            <ComboBoxItem Content="Semestr 4"/>
+        </ComboBox>
+
+        <Button Content="Zapisz studenta w bazie" Height="35"/>
+    </StackPanel>
+</Window>
