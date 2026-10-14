@@ -1,0 +1,34 @@
+﻿<Window x:Class="zad4_wpf.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:zad4_wpf"
+        mc:Ignorable="d"
+        Title="Zadanie 4 - Drzewo Binarne" Height="450" Width="600">
+
+    <Canvas Width="560" Height="380" HorizontalAlignment="Center" VerticalAlignment="Center">
+     
+        <Line X1="280" Y1="60" X2="160" Y2="150" Stroke="Gray" StrokeThickness="2"/>
+        <Line X1="280" Y1="60" X2="400" Y2="150" Stroke="Gray" StrokeThickness="2"/>
+
+        
+        <Line X1="160" Y1="170" X2="90" Y2="270" Stroke="Gray" StrokeThickness="2"/>
+        <Line X1="160" Y1="170" X2="230" Y2="270" Stroke="Gray" StrokeThickness="2"/>
+        <Line X1="400" Y1="170" X2="330" Y2="270" Stroke="Gray" StrokeThickness="2"/>
+        <Line X1="400" Y1="170" X2="470" Y2="270" Stroke="Gray" StrokeThickness="2"/>
+
+        
+        <Button Content="Dziecko" Width="90" Height="35" Canvas.Left="235" Canvas.Top="35" FontWeight="Bold"/>
+
+        
+        <Button Content="Matka" Width="80" Height="32" Canvas.Left="120" Canvas.Top="145"/>
+        <Button Content="Ojciec" Width="80" Height="32" Canvas.Left="360" Canvas.Top="145"/>
+
+        
+        <Button Content="Babcia 1" Width="70" Height="30" Canvas.Left="55" Canvas.Top="265"/>
+        <Button Content="Dziadek 1" Width="70" Height="30" Canvas.Left="195" Canvas.Top="265"/>
+        <Button Content="Babcia 2" Width="70" Height="30" Canvas.Left="295" Canvas.Top="265"/>
+        <Button Content="Dziadek 2" Width="70" Height="30" Canvas.Left="435" Canvas.Top="265"/>
+    </Canvas>
+</Window>
