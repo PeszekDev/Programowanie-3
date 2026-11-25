@@ -1,84 +1,133 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 
 namespace Lista_2
 {
+    // Cała logika gry w statki. Okna tylko wołają jej metody w Click.
     public class Game : INotifyPropertyChanged
     {
-        public const int Size = 10;
-        public const int ShipCount = 5;
-
-        public bool[,] Player1Ships = new bool[Size, Size];
-        public bool[,] Player2Ships = new bool[Size, Size];
-
-        public bool P1Ready = false;
-        public bool P2Ready = false;
-
-        private int _turn = 1;
-        public int Turn
-        {
-            get { return _turn; }
-            set
-            {
-                _turn = value;
-                OnPropertyChanged("Turn");
-            }
-        }
-
-        public int P1ShipsLeft = ShipCount;
-        public int P2ShipsLeft = ShipCount;
-
-        private string _status = "Ustawcie po 5 statków i kliknijcie Gotowe";
-        public string Status
-        {
-            get { return _status; }
-            set
-            {
-                _status = value;
-                OnPropertyChanged("Status");
-            }
-        }
+        public const int Size = 10;      // rozmiar planszy
+        public const int ShipCount = 5;  // liczba statków (pojedyncze pola)
 
         public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged(string name)
+
+        // BoardX = własna plansza gracza X (ze statkami)
+        // ShotsX = to, co gracz X wie o planszy przeciwnika (tylko trafienia i pudła)
+        public Cell[] Board1 { get; } = CreateCells();
+        public Cell[] Shots1 { get; } = CreateCells();
+        public Cell[] Board2 { get; } = CreateCells();
+        public Cell[] Shots2 { get; } = CreateCells();
+
+        private Cell[][] boards;   // indeks 0 = Gracz 1, 1 = Gracz 2
+        private Cell[][] shots;
+
+        private bool[] ready = { false, false };
+        private int[] placed = { 0, 0 };
+        private int[] shipsLeft = { ShipCount, ShipCount };
+        private int turn = 0;
+        private bool gameOver = false;
+
+        private string status = "Ustaw 5 statków i kliknij Gotowe";
+        public string Status
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+            get { return status; }
+            set
+            {
+                status = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Status"));
+            }
         }
 
-        public bool Shoot(int shooter, int r, int c)
+        public Game()
         {
-            if (P1ShipsLeft == 0 || P2ShipsLeft == 0) return false;
-            if (Turn != shooter) return false;
+            boards = new Cell[][] { Board1, Board2 };
+            shots = new Cell[][] { Shots1, Shots2 };
+        }
 
-            bool hit = false;
-            if (shooter == 1)
+        private static Cell[] CreateCells()
+        {
+            Cell[] cells = new Cell[Size * Size];
+            for (int i = 0; i < cells.Length; i++)
+                cells[i] = new Cell();
+            return cells;
+        }
+
+        // klik na własnej planszy: postaw / zdejmij statek
+        public void PlaceShip(int player, int i)
+        {
+            if (ready[player]) return;
+
+            Cell c = boards[player][i];
+            if (c.State == Cell.Ship)
             {
-                hit = Player2Ships[r, c];
-                if (hit)
+                c.State = Cell.Empty;
+                placed[player]--;
+            }
+            else if (placed[player] < ShipCount)
+            {
+                c.State = Cell.Ship;
+                placed[player]++;
+            }
+            Status = "Gracz " + (player + 1) + ": ustawiono " + placed[player] + "/" + ShipCount + " statków";
+        }
+
+        // przycisk "Gotowe"
+        public void SetReady(int player)
+        {
+            if (ready[player]) return;
+
+            if (placed[player] != ShipCount)
+            {
+                Status = "Gracz " + (player + 1) + ": musisz ustawić dokładnie " + ShipCount + " statków!";
+                return;
+            }
+
+            ready[player] = true;
+
+            if (ready[0] && ready[1])
+            {
+                turn = 0;
+                Status = "Gra się zaczęła! Tura: Gracz 1";
+            }
+            else
+            {
+                Status = "Gracz " + (player + 1) + " jest gotowy, czekamy na przeciwnika...";
+            }
+        }
+
+        // strzał gracza "player" w planszę przeciwnika
+        public void Shoot(int player, int i)
+        {
+            if (!ready[0] || !ready[1]) return; // bitwa jeszcze się nie zaczęła
+            if (gameOver) return;
+            if (turn != player) return;         // nie twoja tura
+
+            int enemy = 1 - player;
+            Cell target = boards[enemy][i];
+            if (target.State == Cell.Hit || target.State == Cell.Miss) return; // tu już strzelano
+
+            if (target.State == Cell.Ship)
+            {
+                target.State = Cell.Hit;
+                shots[player][i].State = Cell.Hit;
+                shipsLeft[enemy]--;
+
+                if (shipsLeft[enemy] == 0)
                 {
-                    P2ShipsLeft--;
-                    Status = P2ShipsLeft == 0 ? "Koniec gry! Wygrywa Gracz 1!" : "Trafiony! Gracz 1 strzela dalej.";
+                    gameOver = true;
+                    Status = "Koniec gry! Wygrywa Gracz " + (player + 1) + "!";
                 }
                 else
                 {
-                    Turn = 2;
-                    Status = "Pudło! Tura: Gracz 2";
+                    Status = "Trafiony! Gracz " + (player + 1) + " strzela dalej";
                 }
             }
             else
             {
-                hit = Player1Ships[r, c];
-                if (hit)
-                {
-                    P1ShipsLeft--;
-                    Status = P1ShipsLeft == 0 ? "Koniec gry! Wygrywa Gracz 2!" : "Trafiony! Gracz 2 strzela dalej.";
-                }
-                else
-                {
-                    Turn = 1;
-                    Status = "Pudło! Tura: Gracz 1";
-                }
+                target.State = Cell.Miss;
+                shots[player][i].State = Cell.Miss;
+                turn = enemy;
+                Status = "Pudło! Tura: Gracz " + (enemy + 1);
             }
-            return hit;
         }
     }
 }
